@@ -4,6 +4,9 @@ import com.enigmacamp.coop.entity.Nasabah;
 import com.enigmacamp.coop.repository.NasabahRepository;
 import com.enigmacamp.coop.service.NasabahService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,8 +26,15 @@ public class NasabahServiceImpl implements NasabahService {
     }
 
     @Override
-    public List<Nasabah> getAllNasabah() {
-        return nasabahRepository.findAll();
+    public Page<Nasabah> getAllNasabah(Integer page, Integer size) {
+        // page ke berapa
+        // sizenya berapa perpages
+
+        if (page <=0) {
+            page = 1;
+        }
+        Pageable pageable = PageRequest.of(page-1, size);
+        return nasabahRepository.findAll(pageable);
     }
 
     @Override

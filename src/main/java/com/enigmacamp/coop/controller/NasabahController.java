@@ -1,9 +1,11 @@
 package com.enigmacamp.coop.controller;
 
 import com.enigmacamp.coop.entity.Nasabah;
-import com.enigmacamp.coop.model.WebResponse;
+import com.enigmacamp.coop.model.response.PagingResponse;
+import com.enigmacamp.coop.model.response.WebResponse;
 import com.enigmacamp.coop.service.NasabahService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,12 +31,23 @@ public class NasabahController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllNasabah(){
-        List<Nasabah> nasabahList = nasabahService.getAllNasabah();
+    public ResponseEntity<?> getAllNasabah(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
+    ){
+        Page<Nasabah> nasabahList = nasabahService.getAllNasabah(page, size);
+
+        PagingResponse pagingResponse = PagingResponse.builder()
+                .page(page).size(size)
+                .totalPages(nasabahList.getTotalPages())
+                .totalElement(nasabahList.getTotalElements())
+                .build();
+
         WebResponse<List<Nasabah>> response = WebResponse.<List<Nasabah>>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("Success Get List data")
-                .data(nasabahList)
+                .paging(pagingResponse)
+                .data(nasabahList.getContent())
                 .build();
         return ResponseEntity.ok(response);
     }

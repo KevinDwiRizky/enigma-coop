@@ -1,4 +1,4 @@
-package com.enigmacamp.coop.model;
+package com.enigmacamp.coop.model.response;
 
 import lombok.*;
 
@@ -8,5 +8,6 @@ import lombok.*;
 public class WebResponse<T> {
     private String status;
     private String message;
+    private PagingResponse paging;
     private T data;
 }
