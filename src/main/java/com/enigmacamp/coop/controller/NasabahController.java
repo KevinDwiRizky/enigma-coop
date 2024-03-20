@@ -16,11 +16,28 @@ public class NasabahController {
 
     @PostMapping
     public Nasabah createNasabah(@RequestBody Nasabah nasabah) {
-        return nasabahService.registerNewNasabah(nasabah);
+        return nasabahService.createNasabah(nasabah);
     }
 
     @GetMapping
     public List<Nasabah> getAllNasabah(){
         return nasabahService.getAllNasabah();
     }
+
+    @GetMapping(path = "/{id}")
+    public Nasabah getNasabahById(@PathVariable String id){
+        return nasabahService.getNasabahById(id);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public String deleteNasabahById(@PathVariable String id){
+        nasabahService.getNasabahById(id);
+        return "Success delete Nasabah";
+    }
+
+    @PutMapping
+    public Nasabah updateNasabahById(@RequestBody Nasabah nasabah){
+        return nasabahService.updateNasabah(nasabah);
+    }
+
 }
