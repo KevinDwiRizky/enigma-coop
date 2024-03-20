@@ -6,28 +6,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Date;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "m_trx_saving")
-public class TrxSaving {
+@Table(name = "m_nsaving_type")
+public class SavingType {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-
-    @ManyToOne
-    @JoinColumn(name = "saving_id")
-    private Saving saving;
-
-    @ManyToOne
-    @JoinColumn(name = "saving_type_id")
-    private SavingType savingType;
-
-    private Date date;
-
-
+    private String name;
 }
