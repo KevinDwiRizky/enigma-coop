@@ -23,6 +23,8 @@ public class Nasabah {
     private Date joinDate;
     private String status;
 
-    @OneToMany(mappedBy = "nasabah", cascade = CascadeType.ALL)
-    private List<Saving> savingList;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "saving_id")
+    private Saving saving;
+
 }
