@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface NasabahService {
     Nasabah createNasabah(Nasabah nasabah);
+
     List<Nasabah> getAllNasabah();
 
     Nasabah getNasabahById(String id);
@@ -13,4 +14,6 @@ public interface NasabahService {
     Nasabah updateNasabah(Nasabah nasabah);
 
     void  deleteNasabahById(String id);
+
+    List<Nasabah> createAllNasabah(List<Nasabah> nasabah);
 }

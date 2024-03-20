@@ -40,4 +40,9 @@ public class NasabahController {
         return nasabahService.updateNasabah(nasabah);
     }
 
+    @PostMapping("/batch")
+    public List<Nasabah> createNasabah(@RequestBody List<Nasabah> nasabah) {
+        return nasabahService.createAllNasabah(nasabah);
+    }
+
 }

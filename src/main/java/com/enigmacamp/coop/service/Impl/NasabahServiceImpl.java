@@ -45,4 +45,9 @@ public class NasabahServiceImpl implements NasabahService {
         this.getNasabahById(id);
         nasabahRepository.deleteById(id);
     }
+
+    @Override
+    public List<Nasabah> createAllNasabah(List<Nasabah> nasabahList) {
+        return nasabahRepository.saveAll(nasabahList);
+    }
 }
