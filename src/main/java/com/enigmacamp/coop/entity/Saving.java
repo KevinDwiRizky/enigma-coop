@@ -1,4 +1,4 @@
-package com.enigmacamp.coop.model;
+package com.enigmacamp.coop.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
