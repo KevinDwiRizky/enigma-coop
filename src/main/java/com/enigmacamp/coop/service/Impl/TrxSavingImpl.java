@@ -23,7 +23,6 @@ public class TrxSavingImpl implements TrxSavingService {
 
     private final TrxSavingRepository trxSavingRepository;
     private final SavingService savingService;
-    private final NasabahService nasabahService;
 
     @Override
     @Transactional(rollbackOn = Exception.class)
