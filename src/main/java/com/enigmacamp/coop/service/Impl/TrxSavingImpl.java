@@ -29,14 +29,12 @@ public class TrxSavingImpl implements TrxSavingService {
     public TrxSaving createTrxSaving(TrxSaving trxSaving) {
         // cek saving ke db
         Saving saving = savingService.getSavingById(trxSaving.getSaving().getId());
-        // cek nasabah ke db
-        Nasabah nasabah = nasabahService.getNasabahById(trxSaving.getSaving().getNasabah().getId());
         // cek topup atau penarikan saldo
         if (trxSaving.getSavingType().equals(SavingType.DEBIT)){
             saving.setBalance(saving.getBalance()+trxSaving.getAmount());
         } else {
             if (trxSaving.getAmount() < saving.getBalance()) {
-                saving.setBalance(saving.getBalance() - trxSaving.getAmount());
+                saving.setBalance(saving.getBalance()-trxSaving.getAmount());
             } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Saldo tidak cukup !");
             }
@@ -46,6 +44,6 @@ public class TrxSavingImpl implements TrxSavingService {
 
     @Override
     public List<TrxSaving> getListTrxSaving() {
-        return null;
+        return trxSavingRepository.findAll();
     }
 }
