@@ -2,6 +2,7 @@ package com.enigmacamp.coop.controller;
 
 import com.enigmacamp.coop.entity.TrxSaving;
 import com.enigmacamp.coop.entity.TrxSaving;
+import com.enigmacamp.coop.model.request.TrxSavingRequest;
 import com.enigmacamp.coop.model.response.WebResponse;
 import com.enigmacamp.coop.service.TrxSavingService;
 import lombok.AllArgsConstructor;
@@ -19,8 +20,8 @@ public class TrxSavingController {
     private final TrxSavingService trxSavingService;
 
     @PostMapping
-    public ResponseEntity<WebResponse<TrxSaving>> createTrxSaving(@RequestBody TrxSaving trxSaving) {
-        TrxSaving newTrxSaving = trxSavingService.createTrxSaving(trxSaving);
+    public ResponseEntity<WebResponse<TrxSaving>> createTrxSaving(@RequestBody TrxSavingRequest trxSavingRequest) {
+        TrxSaving newTrxSaving = trxSavingService.createTrxSaving(trxSavingRequest);
         WebResponse<TrxSaving> response = WebResponse.<TrxSaving>builder()
                 .status(HttpStatus.CREATED.getReasonPhrase())
                 .message("Success Trasaction Saving")

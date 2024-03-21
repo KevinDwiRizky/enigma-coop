@@ -4,6 +4,7 @@ import com.enigmacamp.coop.constant.SavingType;
 import com.enigmacamp.coop.entity.Nasabah;
 import com.enigmacamp.coop.entity.Saving;
 import com.enigmacamp.coop.entity.TrxSaving;
+import com.enigmacamp.coop.model.request.TrxSavingRequest;
 import com.enigmacamp.coop.repository.TrxSavingRepository;
 import com.enigmacamp.coop.service.NasabahService;
 import com.enigmacamp.coop.service.SavingService;
@@ -26,20 +27,24 @@ public class TrxSavingImpl implements TrxSavingService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public TrxSaving createTrxSaving(TrxSaving trxSaving) {
-        // cek saving ke db
-        Saving saving = savingService.getSavingById(trxSaving.getSaving().getId());
+    public TrxSaving createTrxSaving(TrxSavingRequest trxSavingRequest) {
+        Saving saving = savingService.getSavingById(trxSavingRequest.getSavingId());
         // cek topup atau penarikan saldo
-        if (trxSaving.getSavingType().equals(SavingType.DEBIT)){
-            saving.setBalance(saving.getBalance()+trxSaving.getAmount());
+        if (trxSavingRequest.getSavingType().equals(SavingType.DEBIT)){
+            saving.setBalance(saving.getBalance()+trxSavingRequest.getAmount());
         } else {
-            if (trxSaving.getAmount() < saving.getBalance()) {
-                saving.setBalance(saving.getBalance()-trxSaving.getAmount());
+            if (trxSavingRequest.getAmount() < saving.getBalance()) {
+                saving.setBalance(saving.getBalance()-trxSavingRequest.getAmount());
             } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Saldo tidak cukup !");
             }
         }
-        return trxSavingRepository.saveAndFlush(trxSaving);
+        TrxSaving newTrxSaving = TrxSaving.builder()
+                .amount(trxSavingRequest.getAmount())
+                .saving(saving)
+                .savingType(trxSavingRequest.getSavingType())
+                .build();
+        return trxSavingRepository.saveAndFlush(newTrxSaving);
     }
 
     @Override
