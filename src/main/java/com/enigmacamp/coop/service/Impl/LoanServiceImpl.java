@@ -9,15 +9,13 @@ import com.enigmacamp.coop.service.LoanService;
 import com.enigmacamp.coop.service.NasabahService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import jakarta.persistence.criteria.Predicate;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -48,5 +46,50 @@ public class LoanServiceImpl implements LoanService {
         return loanRepository.findByNasabahId(id);
     }
 
+    @Override
+    public List<Loan> findLoan(Long amount, Double interestRate, Date startDate, Date dueDate, LoanStatusEnum status, String nasabahId) {
+        // Buat spesifikasi (Specification) untuk kueri dinamis
+        Specification<Loan> spec = (root, query, criteriaBuilder) -> {
+            // Inisialisasi list of predicates
+            List<Predicate> predicates = new ArrayList<>();
+
+            // Tambahkan predikat jika nilai parameter tidak null atau kosong
+            if (amount != null) {
+                predicates.add(criteriaBuilder.equal(root.get("amount"), amount));
+            }
+            if (interestRate != null) {
+                predicates.add(criteriaBuilder.equal(root.get("interestRate"), interestRate));
+            }
+            if (startDate != null) {
+                predicates.add(criteriaBuilder.equal(root.get("startDate"), startDate));
+            }
+            if (dueDate != null) {
+                predicates.add(criteriaBuilder.equal(root.get("dueDate"), dueDate));
+            }
+            if (status != null) {
+                predicates.add(criteriaBuilder.equal(root.get("status"), status));
+            }
+            if (nasabahId != null) {
+                // Dapatkan Nasabah berdasarkan ID
+                Nasabah nasabah = nasabahService.getNasabahById(nasabahId);
+                predicates.add(criteriaBuilder.equal(root.get("nasabah"), nasabah));
+            }
+
+            // Gabungkan semua predikat dengan operator AND
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        // Dapatkan daftar Loan berdasarkan spesifikasi
+        return loanRepository.findAll(spec);
+    }
 
 }
+
+/*
+
+root: Merepresentasikan entitas yang sedang Anda query, memberikan akses ke atribut-atribut entitas tersebut.
+query: Digunakan untuk membangun kueri JPA, seperti menambahkan klausa WHERE, ORDER BY, dan lain-lain.
+criteriaBuilder: Digunakan untuk membuat berbagai kriteria query, seperti persamaan, kecocokan parsial, dan lain-lain.
+predicate: Mewakili kondisi dalam kueri JPA, yang digunakan untuk memfilter hasil query berdasarkan kriteria tertentu.
+
+ */

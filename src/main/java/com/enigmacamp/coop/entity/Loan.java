@@ -27,4 +27,5 @@ public class Loan {
     @ManyToOne( cascade = CascadeType.ALL)
     @JoinColumn(name = "nasabah_id")
     private Nasabah nasabah;
+
 }
