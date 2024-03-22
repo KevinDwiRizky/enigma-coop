@@ -24,7 +24,7 @@ public class Loan {
     @Enumerated(EnumType.STRING)
     private LoanStatusEnum status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "nasabah_id", referencedColumnName = "id")
+    @ManyToOne( cascade = CascadeType.ALL)
+    @JoinColumn(name = "nasabah_id")
     private Nasabah nasabah;
 }

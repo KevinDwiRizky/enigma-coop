@@ -9,8 +9,6 @@ import java.util.List;
 
 public interface LoanService {
     Loan createLoan(LoanRequest loanRequest);
-    Page<Loan> getAllLoan(Integer page, Integer size);
-
-    Loan getLoanById(String id);
+    List<Loan> getLoanByNasabahId(String id);
 
 }

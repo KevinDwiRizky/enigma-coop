@@ -30,6 +30,7 @@ public class LoanServiceImpl implements LoanService {
     public Loan createLoan(LoanRequest loanRequest) {
 
         Nasabah nasabah = nasabahService.getNasabahById(loanRequest.getNasabahId());
+
         Loan newLoan = Loan.builder()
                 .amount(loanRequest.getAmount())
                 .interestRate(loanRequest.getInterestRate())
@@ -43,20 +44,9 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public Page<Loan> getAllLoan(Integer page, Integer size) {
-        if (page <=0) {
-            page = 1;
-        }
-        Pageable pageable = PageRequest.of(page-1, size);
-        return loanRepository.findAll(pageable);
+    public List<Loan> getLoanByNasabahId(String id) {
+        return loanRepository.findByNasabahId(id);
     }
 
-    @Override
-    public Loan getLoanById(String id) {
-        Optional<Loan> optionalLoan=loanRepository.findById(id);
-        if (optionalLoan.isPresent()) return optionalLoan.get();
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Loan with id : " + id + " Not Found");
-
-    }
 
 }

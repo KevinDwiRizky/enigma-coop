@@ -32,37 +32,16 @@ public class LoanController {
         return ResponseEntity.ok(response);
     }
 
-//    @GetMapping
-//    public ResponseEntity<?> getAllLoan(
-//            @RequestParam(defaultValue = "1") Integer page,
-//            @RequestParam(defaultValue = "10") Integer size
-//    ){
-//        Page<Loan> loanList = loanService.getAllLoan(page, size);
-//
-//        PagingResponse pagingResponse = PagingResponse.builder()
-//                .page(page).size(size)
-//                .totalPages(loanList.getTotalPages())
-//                .totalElement(loanList.getTotalElements())
-//                .build();
-//
-//        WebResponse<List<Loan>> response = WebResponse.<List<Loan>>builder()
-//                .status(HttpStatus.OK.getReasonPhrase())
-//                .message("Success Get List Loan")
-//                .paging(pagingResponse)
-//                .data(loanList.getContent())
-//                .build();
-//        return ResponseEntity.ok(response);
-//    }
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<?> getLoanByNasabahId(@PathVariable String id){
+        List<Loan> loanList = loanService.getLoanByNasabahId(id);
+        WebResponse<List<Loan>> response= WebResponse.<List<Loan>>builder()
+                .status(HttpStatus.OK.getReasonPhrase())
+                .message("Success Get loans by Nasabah Id")
+                .data(loanList)
+                .build();
 
+        return ResponseEntity.ok(response);
+    }
 
-//    @GetMapping(path = "/{id}")
-//    public ResponseEntity<?> getLoanById(@PathVariable String id) {
-//        Loan findLoan = loanService.getLoanById(id);
-//        WebResponse<Loan> response = WebResponse.<Loan>builder()
-//                .status(HttpStatus.OK.getReasonPhrase())
-//                .message("Success Get By Id ")
-//                .data(findLoan)
-//                .build();
-//        return ResponseEntity.ok(response);
-//    }
 }
