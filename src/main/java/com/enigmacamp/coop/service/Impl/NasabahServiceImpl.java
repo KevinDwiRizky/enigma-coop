@@ -1,7 +1,9 @@
 package com.enigmacamp.coop.service.Impl;
 
+import com.enigmacamp.coop.constant.NasabahStatus;
 import com.enigmacamp.coop.entity.Nasabah;
 import com.enigmacamp.coop.entity.Saving;
+import com.enigmacamp.coop.model.request.NasabahRequest;
 import com.enigmacamp.coop.repository.NasabahRepository;
 import com.enigmacamp.coop.service.NasabahService;
 import com.enigmacamp.coop.service.SavingService;
@@ -24,9 +26,17 @@ public class NasabahServiceImpl implements NasabahService {
     private final SavingService savingService;
 
     @Override
-    public Nasabah createNasabah(Nasabah nasabah) {
+    public Nasabah createNasabah(NasabahRequest nasabahRequest) {
+
         // setiap register akan dibuatkan saving otomatis
-        Nasabah newNasabah = nasabahRepository.saveAndFlush(nasabah);
+        Nasabah newNasabah = Nasabah.builder()
+                .fullname(nasabahRequest.getFullname())
+                .email(nasabahRequest.getEmail())
+                .phoneNumber(nasabahRequest.getPhoneNumber())
+                .address(nasabahRequest.getAddress())
+                .status(NasabahStatus.ACTIVE)
+                .build();
+//        Nasabah newNasabah = nasabahRepository.saveAndFlush(nasabahRequest);
         Saving newSaving = Saving.builder()
                         .balance(0L)
                         .nasabah(newNasabah)

@@ -1,6 +1,7 @@
 package com.enigmacamp.coop.controller;
 
 import com.enigmacamp.coop.entity.Nasabah;
+import com.enigmacamp.coop.model.request.NasabahRequest;
 import com.enigmacamp.coop.model.response.PagingResponse;
 import com.enigmacamp.coop.model.response.WebResponse;
 import com.enigmacamp.coop.service.NasabahService;
@@ -20,8 +21,8 @@ public class NasabahController {
     private final NasabahService nasabahService;
 
     @PostMapping
-    public ResponseEntity<WebResponse<Nasabah>> createNasabah(@RequestBody Nasabah nasabah) {
-        Nasabah newNasabah = nasabahService.createNasabah(nasabah);
+    public ResponseEntity<WebResponse<Nasabah>> createNasabah(@RequestBody NasabahRequest nasabahRequest) {
+        Nasabah newNasabah = nasabahService.createNasabah(nasabahRequest);
         WebResponse<Nasabah> response = WebResponse.<Nasabah>builder()
                 .status(HttpStatus.CREATED.getReasonPhrase())
                 .message("Success add data")

@@ -1,6 +1,7 @@
 package com.enigmacamp.coop.entity;
 
 import com.enigmacamp.coop.constant.SavingType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,7 @@ public class TrxSaving {
     private Long amount;
     @ManyToOne
     @JoinColumn(name = "saving_id")
+    @JsonBackReference // sisi yang tidak akan di serialisasikan
     private Saving saving;
 
 //    @ManyToOne

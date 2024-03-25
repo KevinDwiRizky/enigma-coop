@@ -47,7 +47,7 @@ public class LoanController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/search")
+    @GetMapping
     public ResponseEntity<List<Loan>> findLoan(
             @RequestParam(required = false) Long amount,
             @RequestParam(required = false) Double interestRate,
