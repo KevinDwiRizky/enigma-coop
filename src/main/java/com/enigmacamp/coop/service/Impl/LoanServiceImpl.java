@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import jakarta.persistence.criteria.Predicate;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -30,12 +31,29 @@ public class LoanServiceImpl implements LoanService {
 
         Nasabah nasabah = nasabahService.getNasabahById(loanRequest.getNasabahId());
 
+        // 1 bulan dari request pinjaman
+        Calendar calendar =Calendar.getInstance();
+        int daysNextMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH) - calendar.get(Calendar.DAY_OF_MONTH);
+
+        // due date / jatuh tempo selalu akan pada tanggal 5 setelah hitungan satu bulan
+        // jika  jarak ke tanggal 5 hanya 15 atau kurang, maka akan ditambah menuju bulan depannya
+        if (daysNextMonth <= 15){
+            calendar.add(Calendar.MONTH, 2);
+        } else {
+            calendar.add(Calendar.MONTH, 1);
+        }
+
+        calendar.set(Calendar.DAY_OF_MONTH, 5);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
         Loan newLoan = Loan.builder()
                 .amount(loanRequest.getAmount())
-                .interestRate(loanRequest.getInterestRate())
-                .startDate(loanRequest.getStartDate())
-                .dueDate(loanRequest.getDueDate())
-                .status(loanRequest.getStatus())
+                .interestRate(5.0)
+                .dueDate(calendar.getTime())
+                .status(LoanStatusEnum.PENDING)
                 .nasabah(nasabah)
                 .build();
         loanRepository.saveAndFlush(newLoan);

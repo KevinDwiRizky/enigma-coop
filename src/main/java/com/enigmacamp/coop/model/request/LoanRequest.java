@@ -14,10 +14,5 @@ import java.util.Date;
 @AllArgsConstructor
 public class LoanRequest {
     private Long amount;
-    private Double interestRate; //bunga
-    private Date startDate; // tanggal mulai
-    private Date dueDate; // jatuh tempo
-    @Enumerated(EnumType.STRING)
-    private LoanStatusEnum status; // status
     private String nasabahId; //nasabah id
 }

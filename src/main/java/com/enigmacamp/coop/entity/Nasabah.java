@@ -25,6 +25,8 @@ public class Nasabah {
     @Column(unique = true)
     private String email;
     private String address;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false, updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Jakarta")
     private Date joinDate;
     @Enumerated(EnumType.STRING)
