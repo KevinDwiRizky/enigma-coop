@@ -4,6 +4,7 @@ import com.enigmacamp.coop.constant.LoanStatusEnum;
 import com.enigmacamp.coop.entity.Loan;
 import com.enigmacamp.coop.entity.Nasabah;
 import com.enigmacamp.coop.model.request.LoanRequest;
+import com.enigmacamp.coop.model.request.SearchLoanRequest;
 import com.enigmacamp.coop.model.response.LoanResponse;
 import com.enigmacamp.coop.model.response.PagingResponse;
 import com.enigmacamp.coop.model.response.WebResponse;
@@ -52,6 +53,37 @@ public class LoanController {
     }
 
     @GetMapping
+    public ResponseEntity<?> getAllLoan(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "10") Long minAmount,
+            @RequestParam(defaultValue = "10") Long maxAmount
+    ) {
+        SearchLoanRequest searchLoanRequest = SearchLoanRequest.builder()
+                .page(page)
+                .size(size)
+                .minAmount(minAmount)
+                .maxAmount(maxAmount)
+                .build();
+        Page<Loan> loanList = loanService.getAllFilterLoan(searchLoanRequest);
+        PagingResponse pagingResponse = PagingResponse.builder()
+                .page(page)
+                .size(size)
+                .totalPages(loanList.getTotalPages())
+                .totalElement(loanList.getTotalElements())
+                .build();
+        WebResponse<List<Loan>> response = WebResponse.<List<Loan>>builder()
+                .status(HttpStatus.OK.getReasonPhrase())
+                .message("Success get loans")
+                .paging(pagingResponse)
+                .data(loanList.getContent())
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+
+
+    @GetMapping("/search")
     public ResponseEntity<List<Loan>> findLoan(
             @RequestParam(required = false) Long amount,
             @RequestParam(required = false) Double interestRate,

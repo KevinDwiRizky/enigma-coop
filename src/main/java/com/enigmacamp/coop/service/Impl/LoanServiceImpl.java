@@ -4,12 +4,16 @@ import com.enigmacamp.coop.constant.LoanStatusEnum;
 import com.enigmacamp.coop.entity.Loan;
 import com.enigmacamp.coop.entity.Nasabah;
 import com.enigmacamp.coop.model.request.LoanRequest;
+import com.enigmacamp.coop.model.request.SearchLoanRequest;
 import com.enigmacamp.coop.model.response.LoanResponse;
 import com.enigmacamp.coop.repository.LoanRepository;
 import com.enigmacamp.coop.service.LoanService;
 import com.enigmacamp.coop.service.NasabahService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +35,34 @@ public class LoanServiceImpl implements LoanService {
     public LoanResponse createLoan(LoanRequest loanRequest) {
         Nasabah nasabah = nasabahService.getNasabahById(loanRequest.getNasabahId());
 
+        Calendar calendar = getCalendar();
+
+
+        Loan newLoan = Loan.builder()
+                .amount(loanRequest.getAmount())
+                .interestRate(0.05)
+                .dueDate(calendar.getTime())
+                .status(LoanStatusEnum.PENDING)
+                .nasabah(nasabah)
+                .build();
+
+        // Menghitung bunga
+        Double interest = newLoan.getAmount() * 0.05; // Bunga 5%
+        Double totalPayment = newLoan.getAmount() + interest;
+        Loan saveLoan = loanRepository.saveAndFlush(newLoan);
+        return LoanResponse.builder()
+                .id(saveLoan.getId())
+                .amount(saveLoan.getAmount())
+                .interestRate(saveLoan.getInterestRate())
+                .dueDate(saveLoan.getDueDate())
+                .startDate(saveLoan.getStartDate())
+                .nasabah(saveLoan.getNasabah())
+                .status(saveLoan.getStatus())
+                .totalPayment(totalPayment.longValue())
+                .build();
+    }
+
+    private static Calendar getCalendar() {
         Calendar calendar = Calendar.getInstance();
         int daysNextMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH) - calendar.get(Calendar.DAY_OF_MONTH);
 
@@ -45,35 +77,39 @@ public class LoanServiceImpl implements LoanService {
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-
-
-        Loan newLoan = Loan.builder()
-                .amount(loanRequest.getAmount())
-                .interestRate(5.0)
-                .dueDate(calendar.getTime())
-                .status(LoanStatusEnum.PENDING)
-                .nasabah(nasabah)
-                .build();
-
-        // Menghitung bunga
-        Double interest = newLoan.getAmount() * 0.05; // Bunga 5%
-        Double totalPayment = newLoan.getAmount() + interest;
-
-        return LoanResponse.builder()
-                .id(newLoan.getId())
-                .amount(newLoan.getAmount())
-                .dueDate(newLoan.getDueDate())
-                .startDate(newLoan.getStartDate())
-                .nasabah(newLoan.getNasabah())
-                .status(newLoan.getStatus())
-                .totalPayment(totalPayment.longValue())
-                .build();
+        return calendar;
     }
 
     @Override
     public List<Loan> getLoanByNasabahId(String id) {
         return loanRepository.findByNasabahId(id);
     }
+
+    private Specification<Loan> amountBetweenSpesificaion(Long minAmount, Long maxAmount) {
+        return (root, query, criteriaBuilder) -> {
+            Predicate minAmountPredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("amount"), minAmount);
+            Predicate maxAmountPredicate = criteriaBuilder.lessThanOrEqualTo(root.get("amount"), maxAmount);
+            return criteriaBuilder.and(minAmountPredicate, maxAmountPredicate);
+        };
+    }
+
+
+    @Override
+    public Page<Loan> getAllFilterLoan(SearchLoanRequest searchLoanRequest) {
+
+        if (searchLoanRequest.getPage() <= 0){
+            searchLoanRequest.setPage(1);
+        }
+        Specification<Loan> loanSpecification = amountBetweenSpesificaion(
+                searchLoanRequest.getMinAmount(),
+                searchLoanRequest.getMaxAmount()
+        );
+
+        Pageable pageable = PageRequest.of(searchLoanRequest.getPage()-1, searchLoanRequest.getSize());
+        return loanRepository.findAll(loanSpecification,pageable);
+
+    }
+
 
     @Override
     public List<Loan> findLoan(Long amount, Double interestRate, Date startDate, Date dueDate, LoanStatusEnum status, String nasabahId) {
