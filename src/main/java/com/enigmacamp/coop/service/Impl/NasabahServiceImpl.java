@@ -7,12 +7,14 @@ import com.enigmacamp.coop.model.request.NasabahRequest;
 import com.enigmacamp.coop.repository.NasabahRepository;
 import com.enigmacamp.coop.service.NasabahService;
 import com.enigmacamp.coop.service.SavingService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -26,7 +28,7 @@ public class NasabahServiceImpl implements NasabahService {
     private final SavingService savingService;
 
     @Override
-    public Nasabah createNasabah(NasabahRequest nasabahRequest) {
+    public Nasabah createNasabah(@Valid @RequestBody NasabahRequest nasabahRequest) {
 
         // setiap register akan dibuatkan saving otomatis
         Nasabah newNasabah = Nasabah.builder()

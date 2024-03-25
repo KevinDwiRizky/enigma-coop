@@ -5,6 +5,7 @@ import com.enigmacamp.coop.model.request.NasabahRequest;
 import com.enigmacamp.coop.model.response.PagingResponse;
 import com.enigmacamp.coop.model.response.WebResponse;
 import com.enigmacamp.coop.service.NasabahService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class NasabahController {
     private final NasabahService nasabahService;
 
     @PostMapping
-    public ResponseEntity<WebResponse<Nasabah>> createNasabah(@RequestBody NasabahRequest nasabahRequest) {
+    public ResponseEntity<WebResponse<Nasabah>> createNasabah(@Valid @RequestBody NasabahRequest nasabahRequest) {
         Nasabah newNasabah = nasabahService.createNasabah(nasabahRequest);
         WebResponse<Nasabah> response = WebResponse.<Nasabah>builder()
                 .status(HttpStatus.CREATED.getReasonPhrase())

@@ -4,9 +4,14 @@ import com.enigmacamp.coop.model.response.WebResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 @RestControllerAdvice
 public class ErrorController {
@@ -33,6 +38,25 @@ public class ErrorController {
                 .build();
 
         // Mengembalikan respons dengan pesan kesalahan yang disesuaikan
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
+
+    // untuk menangani error validation
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    public ResponseEntity<?> handleValidation(MethodArgumentNotValidException e) {
+        Map<String, Object> errors = new HashMap<>();
+        e.getBindingResult().getFieldErrors().forEach(
+                err -> errors.put(err.getField(), err.getDefaultMessage())
+        );
+
+        WebResponse<Map<String, Object>> response = WebResponse.<Map<String, Object>>builder()
+                .status(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message("Validation failed")
+                .data(errors)
+                .build();
+
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(response);
