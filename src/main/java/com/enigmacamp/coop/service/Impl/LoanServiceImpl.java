@@ -4,6 +4,7 @@ import com.enigmacamp.coop.constant.LoanStatusEnum;
 import com.enigmacamp.coop.entity.Loan;
 import com.enigmacamp.coop.entity.Nasabah;
 import com.enigmacamp.coop.model.request.LoanRequest;
+import com.enigmacamp.coop.model.response.LoanResponse;
 import com.enigmacamp.coop.repository.LoanRepository;
 import com.enigmacamp.coop.service.LoanService;
 import com.enigmacamp.coop.service.NasabahService;
@@ -27,17 +28,13 @@ public class LoanServiceImpl implements LoanService {
     private final LoanRepository loanRepository;
     @Override
     @Transactional
-    public Loan createLoan(LoanRequest loanRequest) {
-
+    public LoanResponse createLoan(LoanRequest loanRequest) {
         Nasabah nasabah = nasabahService.getNasabahById(loanRequest.getNasabahId());
 
-        // 1 bulan dari request pinjaman
-        Calendar calendar =Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         int daysNextMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH) - calendar.get(Calendar.DAY_OF_MONTH);
 
-        // due date / jatuh tempo selalu akan pada tanggal 5 setelah hitungan satu bulan
-        // jika  jarak ke tanggal 5 hanya 15 atau kurang, maka akan ditambah menuju bulan depannya
-        if (daysNextMonth <= 15){
+        if (daysNextMonth <= 15) {
             calendar.add(Calendar.MONTH, 2);
         } else {
             calendar.add(Calendar.MONTH, 1);
@@ -49,6 +46,7 @@ public class LoanServiceImpl implements LoanService {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
+
         Loan newLoan = Loan.builder()
                 .amount(loanRequest.getAmount())
                 .interestRate(5.0)
@@ -56,8 +54,20 @@ public class LoanServiceImpl implements LoanService {
                 .status(LoanStatusEnum.PENDING)
                 .nasabah(nasabah)
                 .build();
-        loanRepository.saveAndFlush(newLoan);
-        return newLoan;
+
+        // Menghitung bunga
+        Double interest = newLoan.getAmount() * 0.05; // Bunga 5%
+        Double totalPayment = newLoan.getAmount() + interest;
+
+        return LoanResponse.builder()
+                .id(newLoan.getId())
+                .amount(newLoan.getAmount())
+                .dueDate(newLoan.getDueDate())
+                .startDate(newLoan.getStartDate())
+                .nasabah(newLoan.getNasabah())
+                .status(newLoan.getStatus())
+                .totalPayment(totalPayment.longValue())
+                .build();
     }
 
     @Override

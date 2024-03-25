@@ -4,6 +4,7 @@ import com.enigmacamp.coop.constant.LoanStatusEnum;
 import com.enigmacamp.coop.entity.Loan;
 import com.enigmacamp.coop.entity.Nasabah;
 import com.enigmacamp.coop.model.request.LoanRequest;
+import com.enigmacamp.coop.model.response.LoanResponse;
 import com.enigmacamp.coop.model.response.PagingResponse;
 import com.enigmacamp.coop.model.response.WebResponse;
 import com.enigmacamp.coop.service.LoanService;
@@ -25,15 +26,18 @@ public class LoanController {
     private final LoanService loanService;
 
     @PostMapping
-    public ResponseEntity<?> createLoan(@RequestBody LoanRequest loanRequest){
-        Loan newLoan = loanService.createLoan(loanRequest);
-        WebResponse<Loan> response = WebResponse.<Loan>builder()
+    public ResponseEntity<?> createLoan(@RequestBody LoanRequest loanRequest) {
+        LoanResponse newLoanResponse = loanService.createLoan(loanRequest);
+
+        WebResponse<LoanResponse> response = WebResponse.<LoanResponse>builder()
                 .status(HttpStatus.CREATED.getReasonPhrase())
                 .message("Success create Loan")
-                .data(newLoan)
+                .data(newLoanResponse)
                 .build();
-        return ResponseEntity.ok(response);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> getLoanByNasabahId(@PathVariable String id){
