@@ -24,7 +24,7 @@ public class UserCredential implements UserDetails {
     @Column(unique = true)
     private String username;
     private String password;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
 
     @Override
