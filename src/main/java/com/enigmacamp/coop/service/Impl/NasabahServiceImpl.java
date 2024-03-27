@@ -30,7 +30,6 @@ public class NasabahServiceImpl implements NasabahService {
 
 
 
-
     @Override
     public Nasabah createNasabah(@Valid @RequestBody NasabahRequest nasabahRequest) {
 
