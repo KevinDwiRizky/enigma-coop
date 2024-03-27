@@ -32,4 +32,7 @@ public class NasabahRequest {
 
     @NotBlank(message = "Address is mandatory and cannot be blank")
     private String address;
+
+    private String username;
+    private String password;
 }

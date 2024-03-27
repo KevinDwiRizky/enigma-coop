@@ -9,6 +9,7 @@ import com.enigmacamp.coop.service.NasabahService;
 import com.enigmacamp.coop.service.SavingService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,8 +25,11 @@ import java.util.Optional;
 @AllArgsConstructor
 public class NasabahServiceImpl implements NasabahService {
 
-    private NasabahRepository nasabahRepository;
+    private final NasabahRepository nasabahRepository;
     private final SavingService savingService;
+
+
+
 
     @Override
     public Nasabah createNasabah(@Valid @RequestBody NasabahRequest nasabahRequest) {

@@ -2,8 +2,10 @@ package com.enigmacamp.coop.controller;
 
 import com.enigmacamp.coop.entity.Nasabah;
 import com.enigmacamp.coop.model.request.NasabahRequest;
+import com.enigmacamp.coop.model.response.NasabahResponse;
 import com.enigmacamp.coop.model.response.PagingResponse;
 import com.enigmacamp.coop.model.response.WebResponse;
+import com.enigmacamp.coop.service.AuthService;
 import com.enigmacamp.coop.service.NasabahService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -14,20 +16,23 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/nasabah")
-@AllArgsConstructor
 public class NasabahController {
 
-    private final NasabahService nasabahService;
 
-    @PostMapping
-    public ResponseEntity<WebResponse<Nasabah>> createNasabah(@Valid @RequestBody NasabahRequest nasabahRequest) {
-        Nasabah newNasabah = nasabahService.createNasabah(nasabahRequest);
-        WebResponse<Nasabah> response = WebResponse.<Nasabah>builder()
+    private final NasabahService nasabahService;
+    private final AuthService authService;
+
+    @PostMapping("/register")
+    public ResponseEntity<WebResponse<NasabahResponse>> createNasabah(
+            @Valid @RequestBody NasabahRequest nasabahRequest){
+        NasabahResponse nasabahResponse = authService.register(nasabahRequest);
+        WebResponse<NasabahResponse> response = WebResponse.<NasabahResponse>builder()
                 .status(HttpStatus.CREATED.getReasonPhrase())
-                .message("Success add data")
-                .data(newNasabah)
+                .message("Succes register new nasabah")
+                .data(nasabahResponse)
                 .build();
         return ResponseEntity.ok(response);
     }
