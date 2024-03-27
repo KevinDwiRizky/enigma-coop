@@ -32,6 +32,9 @@ public class Nasabah {
     @Enumerated(EnumType.STRING)
     private NasabahStatus status;
 
+    @OneToOne
+    private UserCredential userCredential;
+
     @PrePersist
     protected  void onCreate(){
         joinDate = new Date();

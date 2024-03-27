@@ -27,7 +27,7 @@ public class SecurityConfiguration {
                 .sessionManagement(cfg ->cfg.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request ->
                         request.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-                                .requestMatchers("api/v1/auth/","api/v1/nasabah/register").permitAll()
+                                .requestMatchers("api/v1/auth/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAthenticationFIlter, UsernamePasswordAuthenticationFilter.class)

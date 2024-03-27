@@ -21,15 +21,16 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class JwtUtils {
-    @Value("${app.enigma-coop.jwt-secret}")
-    private String secretKey;
-    @Value("${app.enigma-coop.jwt-expiration}")
-    private Long expirationInSecond;
     @Value("${app.enigma-coop.jwt-app-name}")
     private String appName;
 
+    @Value("${app.enigma-coop.jwt-expiration}")
+    private Long expirationInSecond;
+    @Value("${app.enigma-coop.jwt-secret}")
+    private String secretKey;
+
     // Method untuk menghasilkan JWT (JSON Web Token) berdasarkan kredensial pengguna
-    public String generateKey(UserCredential userCredential) {
+    public String generateToken(UserCredential userCredential) {
         try {
             // Mendapatkan peran dari kredensial pengguna dan memetakkannya ke nama peran
             List<String> roles = userCredential.getRoles()

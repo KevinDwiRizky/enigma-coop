@@ -25,19 +25,10 @@ public class NasabahController {
     private final NasabahService nasabahService;
     private final AuthService authService;
 
-    @PostMapping("/register")
-    public ResponseEntity<WebResponse<NasabahResponse>> createNasabah(
-            @Valid @RequestBody NasabahRequest nasabahRequest){
-        NasabahResponse nasabahResponse = authService.register(nasabahRequest);
-        WebResponse<NasabahResponse> response = WebResponse.<NasabahResponse>builder()
-                .status(HttpStatus.CREATED.getReasonPhrase())
-                .message("Succes register new nasabah")
-                .data(nasabahResponse)
-                .build();
-        return ResponseEntity.ok(response);
-    }
+
 
     @GetMapping
+
     public ResponseEntity<?> getAllNasabah(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size
