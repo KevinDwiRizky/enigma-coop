@@ -16,6 +16,8 @@ import com.enigmacamp.coop.service.NasabahService;
 import com.enigmacamp.coop.service.RoleService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,9 +26,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final RoleService roleService;
@@ -35,6 +38,31 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+
+    @Value("${app.enigma-coop.username-admin}")
+    private String usernameAdmin;
+
+    @Value("${app.enigma-coop.password-admin}")
+    private String passwordAdmin; // Mengubah nama variabel menjadi passwordAdmin
+
+    public void initSuperAdmin(){
+        Optional<UserCredential> optionalUserCredential = credentialRepository.findByUsername(usernameAdmin);
+        if(optionalUserCredential.isPresent()) return;
+
+        Role superAdminRole = roleService.getOrSave(RoleEnum.ROLE_SUPER_ADMIN);
+        Role adminRole = roleService.getOrSave(RoleEnum.ROLE_ADMIN);
+        Role customerRole = roleService.getOrSave(RoleEnum.ROLE_CUSTOMER);
+
+        String hashPassword = passwordEncoder.encode(passwordAdmin); // Menggunakan passwordAdmin
+
+        UserCredential userCredential = UserCredential.builder()
+                .username(usernameAdmin)
+                .password(hashPassword)
+                .roles(List.of(superAdminRole, adminRole, customerRole))
+                .build();
+        credentialRepository.saveAndFlush(userCredential);
+    }
+
 
     @Override
     @Transactional

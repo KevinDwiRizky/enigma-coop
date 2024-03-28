@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+//@PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+@PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/nasabah")
@@ -29,7 +31,6 @@ public class NasabahController {
 
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public ResponseEntity<?> getAllNasabah(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size
