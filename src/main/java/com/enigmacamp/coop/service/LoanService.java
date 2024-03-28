@@ -18,4 +18,8 @@ public interface LoanService {
 //    List<Loan> findLoan(SearchLoanRequest searchLoanRequest);
 
     Page<Loan> getAllFilterLoan(SearchLoanRequest searchLoanRequest);
+
+    Loan getById(String id);
+
+    Loan approveLoanById(String id);
 }

@@ -1,7 +1,9 @@
 package com.enigmacamp.coop.entity;
 
 import com.enigmacamp.coop.constant.NasabahStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,6 +36,7 @@ public class Nasabah {
 
     @OneToOne
     private UserCredential userCredential;
+
 
     @PrePersist
     protected  void onCreate(){

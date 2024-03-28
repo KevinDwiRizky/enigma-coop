@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/loan")
@@ -52,9 +53,17 @@ public class LoanController {
 
         return ResponseEntity.ok(response);
     }
-
+    @GetMapping(path = "/status/{id}")
+    public ResponseEntity<?> getStatusById(@PathVariable String id) {
+        Loan findNasabah = loanService.approveLoanById(id);
+        WebResponse<Loan> response = WebResponse.<Loan>builder()
+                .status(HttpStatus.OK.getReasonPhrase())
+                .message("Success update status loan By Id ")
+                .data(findNasabah)
+                .build();
+        return ResponseEntity.ok(response);
+    }
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getAllLoan(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,

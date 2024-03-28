@@ -1,28 +1,31 @@
 package com.enigmacamp.coop.service.Impl;
 
 import com.enigmacamp.coop.constant.LoanStatusEnum;
+import com.enigmacamp.coop.constant.SavingType;
 import com.enigmacamp.coop.entity.Loan;
 import com.enigmacamp.coop.entity.Nasabah;
+import com.enigmacamp.coop.entity.Saving;
 import com.enigmacamp.coop.model.request.LoanRequest;
 import com.enigmacamp.coop.model.request.SearchLoanRequest;
+import com.enigmacamp.coop.model.request.TrxSavingRequest;
 import com.enigmacamp.coop.model.response.LoanResponse;
 import com.enigmacamp.coop.repository.LoanRepository;
 import com.enigmacamp.coop.service.LoanService;
 import com.enigmacamp.coop.service.NasabahService;
+import com.enigmacamp.coop.service.SavingService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.criteria.Predicate;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -30,6 +33,8 @@ public class LoanServiceImpl implements LoanService {
 
     private final NasabahService nasabahService;
     private final LoanRepository loanRepository;
+    private final SavingService savingService;
+    private final TrxSavingImpl trxSaving;
     @Override
     @Transactional
     public LoanResponse createLoan(LoanRequest loanRequest) {
@@ -109,6 +114,47 @@ public class LoanServiceImpl implements LoanService {
         return loanRepository.findAll(loanSpecification,pageable);
 
     }
+
+    @Override
+    public Loan getById(String id) {
+        Optional<Loan> optionalLoan=loanRepository.findById(id);
+        if (optionalLoan.isPresent()) return optionalLoan.get();
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Loan with id : " + id + " Not Found");
+    }
+
+    @Override
+    public Loan approveLoanById(String id) {
+        Loan findLoan = this.getById(id);
+
+        Saving savingAccount = savingService.getSavingByNasabahId(findLoan.getNasabah().getId()); // Menggunakan ID Nasabah dari loan
+
+        if (findLoan.getStatus() != LoanStatusEnum.PENDING) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status not valid to approved");
+        } else {
+            findLoan.setStatus(LoanStatusEnum.APPROVED);
+            loanRepository.saveAndFlush(findLoan);
+
+            if (findLoan.getStatus() == LoanStatusEnum.APPROVED) {
+                // Periksa saldo tabungan sebelum membuat transaksi debet
+                Long amount = findLoan.getAmount();
+                if (savingAccount.getBalance() < amount) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Saldo tabungan tidak mencukupi");
+                }
+
+                // Buat objek TrxSavingRequest menggunakan pola builder
+                TrxSavingRequest trxSavingRequest = TrxSavingRequest.builder()
+                        .amount(amount)
+                        .savingId(savingAccount.getId())
+                        .savingType(SavingType.DEBIT)
+                        .build();
+
+
+                trxSaving.createTrxSaving(trxSavingRequest);
+            }
+        }
+        return findLoan;
+    }
+
 
 
     @Override
