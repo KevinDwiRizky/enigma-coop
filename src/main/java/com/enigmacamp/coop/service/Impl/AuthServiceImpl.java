@@ -72,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public NasabahResponse register(NasabahRequest nasabahRequest) {
         // Untuk role
-        Role roleCustomer = roleService.getOrSave(RoleEnum.ROLE_CUSTOMER);
+        Role roleCustomer = roleService.getOrSave(RoleEnum.ROLE_ADMIN);
         // Hash password
         String hashPassword = passwordEncoder.encode(nasabahRequest.getPassword());
 
@@ -84,11 +84,8 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         credentialRepository.saveAndFlush(userCredential);
 
-        // Buat Nasabah dengan menggunakan ID UserCredential yang baru dibuat
         Nasabah nasabah = nasabahService.createNasabah(nasabahRequest, userCredential);
 
-
-        // Konstruksi respons Nasabah
         List<String> roles = userCredential.getRoles().stream()
                 .map(role -> role.getRole().name())
                 .toList();

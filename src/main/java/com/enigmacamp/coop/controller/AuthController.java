@@ -6,6 +6,7 @@ import com.enigmacamp.coop.model.request.NasabahRequest;
 import com.enigmacamp.coop.model.response.NasabahResponse;
 import com.enigmacamp.coop.model.response.WebResponse;
 import com.enigmacamp.coop.service.AuthService;
+import com.enigmacamp.coop.service.NasabahService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,11 +14,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final NasabahService nasabahService;
 
     @PostMapping("/register")
     public ResponseEntity<WebResponse<NasabahResponse>> createNasabah(
@@ -57,4 +61,28 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unable to get user ID from token");
         }
     }
+
+//    @GetMapping("/profile")
+//    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+//    public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String token) {
+//        String userId = authService.getUserIdFromToken(token);
+//        if (userId != null) {
+//            List<Nasabah> nasabahList = nasabahService.getNasabahByUserId(userId);
+//            if (!nasabahList.isEmpty()) {
+//                WebResponse<List<Nasabah>> response = WebResponse.<List<Nasabah>>builder()
+//                        .status(HttpStatus.OK.getReasonPhrase())
+//                        .message("Success Get By Id")
+//                        .data(nasabahList)
+//                        .build();
+//                return ResponseEntity.ok(response);
+//            } else {
+//                return ResponseEntity.notFound().build(); // Tidak ada Nasabah ditemukan
+//            }
+//        } else {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unable to get user ID from token");
+//        }
+//    }
+
+
+
 }

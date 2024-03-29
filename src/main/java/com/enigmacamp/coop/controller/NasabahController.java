@@ -86,6 +86,8 @@ public class NasabahController {
     }
 
 
+
+
     @PostMapping("/batch")
     public ResponseEntity<WebResponse<List<Nasabah>>> createNasabah(@RequestBody List<Nasabah> nasabahList) {
         List<Nasabah> newNasabahList = nasabahService.createAllNasabah(nasabahList);

@@ -42,7 +42,7 @@ public class NasabahServiceImpl implements NasabahService {
                 .phoneNumber(nasabahRequest.getPhoneNumber())
                 .address(nasabahRequest.getAddress())
                 .status(NasabahStatus.ACTIVE)
-                .userCredentialId(userCredential.getId()) // Menggunakan ID UserCredential
+                .userCredentialId(userCredential.getId())
                 .build();
 
         // Simpan nasabah
