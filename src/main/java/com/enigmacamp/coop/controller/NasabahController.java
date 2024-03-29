@@ -52,7 +52,6 @@ public class NasabahController {
         return ResponseEntity.ok(response);
     }
 
-
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> getNasabahById(@PathVariable String id) {
         Nasabah findNasabah = nasabahService.getNasabahById(id);
@@ -63,11 +62,6 @@ public class NasabahController {
                 .build();
         return ResponseEntity.ok(response);
     }
-
-
-
-
-
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<?> deleteNasabahById(@PathVariable String id){

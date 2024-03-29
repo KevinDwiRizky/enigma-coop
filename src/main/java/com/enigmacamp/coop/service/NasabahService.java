@@ -18,5 +18,7 @@ public interface NasabahService {
 
     void  deleteNasabahById(String id);
 
+    List<Nasabah> getNasabahByUserId(String userId);
+
     List<Nasabah> createAllNasabah(List<Nasabah> nasabah);
 }

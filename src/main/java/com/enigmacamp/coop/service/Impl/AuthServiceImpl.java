@@ -12,6 +12,7 @@ import com.enigmacamp.coop.model.request.AuthRequest;
 import com.enigmacamp.coop.model.request.NasabahRequest;
 import com.enigmacamp.coop.model.response.AuthResponse;
 import com.enigmacamp.coop.model.response.NasabahResponse;
+import com.enigmacamp.coop.repository.NasabahRepository;
 import com.enigmacamp.coop.repository.UserCredentialRepository;
 import com.enigmacamp.coop.security.JwtUtils;
 import com.enigmacamp.coop.service.AuthService;
@@ -114,12 +115,24 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String getUserIdFromToken(String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
         JwtClaim jwtClaim = jwtUtils.getUserInfoByToken(token);
         if (jwtClaim != null) {
-            return jwtClaim.getUserId();
+            String userId = jwtClaim.getUserId();
+            // Panggil layanan untuk mendapatkan data nasabah berdasarkan userId
+            List<Nasabah> nasabahList = nasabahService.getNasabahByUserId(userId);
+            // Lakukan apa pun yang perlu dilakukan dengan data nasabah
+            // Misalnya, kembalikan data nasabah atau lakukan operasi lain
+            // ...
+            // Contoh: Mengembalikan daftar nasabah dalam bentuk JSON
+            return nasabahList.toString();
         } else {
             return null;
         }
     }
+
+
 
 }

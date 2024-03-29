@@ -106,6 +106,11 @@ public class NasabahServiceImpl implements NasabahService {
     }
 
     @Override
+    public List<Nasabah> getNasabahByUserId(String userId) {
+        return nasabahRepository.findByUserCredential_Id(userId);
+    }
+
+    @Override
     public List<Nasabah> createAllNasabah(List<Nasabah> nasabahList) {
         return nasabahRepository.saveAll(nasabahList);
     }

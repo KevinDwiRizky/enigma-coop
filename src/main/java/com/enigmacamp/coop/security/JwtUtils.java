@@ -71,14 +71,12 @@ public class JwtUtils {
     private DecodedJWT getDecodedJWT(String token) {
         Algorithm algorithm = Algorithm.HMAC512(secretKey);
         JWTVerifier jwtVerifier = JWT.require(algorithm).build();
-        DecodedJWT decodedJWT = jwtVerifier.verify(token);
-        return decodedJWT;
+        return jwtVerifier.verify(token);
     }
 
     // Method untuk mengambil informasi pengguna dari token JWT
     public JwtClaim getUserInfoByToken(String token){
         try {
-            // Mendekode token JWT
             DecodedJWT decodedJWT = getDecodedJWT(token);
 
             List<String> roles = decodedJWT.getClaim("roles").asList(String.class);
