@@ -3,6 +3,7 @@ package com.enigmacamp.coop.service.Impl;
 import com.enigmacamp.coop.constant.NasabahStatus;
 import com.enigmacamp.coop.entity.Nasabah;
 import com.enigmacamp.coop.entity.Saving;
+import com.enigmacamp.coop.entity.UserCredential;
 import com.enigmacamp.coop.model.request.NasabahRequest;
 import com.enigmacamp.coop.repository.NasabahRepository;
 import com.enigmacamp.coop.service.NasabahService;
@@ -33,24 +34,30 @@ public class NasabahServiceImpl implements NasabahService {
 
 
     @Override
-    public Nasabah createNasabah(@Valid @RequestBody NasabahRequest nasabahRequest) {
-
-        // setiap register akan dibuatkan saving otomatis
+    public Nasabah createNasabah(NasabahRequest nasabahRequest, UserCredential userCredential) {
+        // Setiap register akan dibuatkan saving otomatis
         Nasabah newNasabah = Nasabah.builder()
                 .fullname(nasabahRequest.getFullname())
                 .email(nasabahRequest.getEmail())
                 .phoneNumber(nasabahRequest.getPhoneNumber())
                 .address(nasabahRequest.getAddress())
                 .status(NasabahStatus.ACTIVE)
+                .userCredentialId(userCredential.getId()) // Menggunakan ID UserCredential
                 .build();
-//        Nasabah newNasabah = nasabahRepository.saveAndFlush(nasabahRequest);
+
+        // Simpan nasabah
+        Nasabah savedNasabah = nasabahRepository.saveAndFlush(newNasabah);
+
+        // Buat saving baru untuk nasabah
         Saving newSaving = Saving.builder()
-                        .balance(0L)
-                        .nasabah(newNasabah)
-                        .build();
+                .balance(0L)
+                .nasabah(savedNasabah) // Mengaitkan saving dengan nasabah yang baru dibuat
+                .build();
         savingService.createSaving(newSaving);
-        return newNasabah;
+
+        return savedNasabah;
     }
+
 
     @Override
     public Page<Nasabah> getAllNasabah(Integer page, Integer size) {
@@ -106,8 +113,8 @@ public class NasabahServiceImpl implements NasabahService {
     }
 
     @Override
-    public List<Nasabah> getNasabahByUserId(String userId) {
-        return nasabahRepository.findByUserCredential_Id(userId);
+    public List<Nasabah> getNasabahByUserId(String userCredentialId) {
+        return nasabahRepository.findByUserCredentialId(userCredentialId);
     }
 
     @Override

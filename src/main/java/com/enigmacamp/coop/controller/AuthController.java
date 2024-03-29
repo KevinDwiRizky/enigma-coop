@@ -1,5 +1,6 @@
 package com.enigmacamp.coop.controller;
 
+import com.enigmacamp.coop.entity.Nasabah;
 import com.enigmacamp.coop.model.request.AuthRequest;
 import com.enigmacamp.coop.model.request.NasabahRequest;
 import com.enigmacamp.coop.model.response.NasabahResponse;
@@ -43,10 +44,15 @@ public class AuthController {
 
     @GetMapping("/profile")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
-    public ResponseEntity<String> getProfile(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String token) {
         String userId = authService.getUserIdFromToken(token);
         if (userId != null) {
-            return ResponseEntity.ok("User ID: " + userId);
+            WebResponse<String> response = WebResponse.<String>builder()
+                    .status(HttpStatus.OK.getReasonPhrase())
+                    .message("Success Get By Id ")
+                    .data(userId)
+                    .build();
+            return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unable to get user ID from token");
         }

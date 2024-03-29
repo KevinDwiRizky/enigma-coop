@@ -35,4 +35,5 @@ public class NasabahRequest {
 
     private String username;
     private String password;
+    private String userCredentialId;
 }

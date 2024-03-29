@@ -34,8 +34,8 @@ public class Nasabah {
     @Enumerated(EnumType.STRING)
     private NasabahStatus status;
 
-    @OneToOne
-    private UserCredential userCredential;
+
+    private String userCredentialId;
 
 
     @PrePersist

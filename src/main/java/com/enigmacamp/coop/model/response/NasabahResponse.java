@@ -21,4 +21,5 @@ public class NasabahResponse {
 
     private String username;
     private List<String> role;
+    private String userCredential;
 }

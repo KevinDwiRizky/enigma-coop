@@ -71,30 +71,39 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public NasabahResponse register(NasabahRequest nasabahRequest) {
-        //untuk role
+        // Untuk role
         Role roleCustomer = roleService.getOrSave(RoleEnum.ROLE_CUSTOMER);
-        //hash password
+        // Hash password
         String hashPassword = passwordEncoder.encode(nasabahRequest.getPassword());
-        //new nasabah
-        Nasabah nasabah = nasabahService.createNasabah(nasabahRequest);
-        //user credential baru
+
+        // Buat dan simpan UserCredential terlebih dahulu
         UserCredential userCredential = UserCredential.builder()
                 .username(nasabahRequest.getUsername())
                 .password(hashPassword)
                 .roles(List.of(roleCustomer))
                 .build();
-        UserCredential savedUserCredential = credentialRepository.saveAndFlush(userCredential);
-        //List role
-        List<String> roles = userCredential.getRoles().stream().map(role -> role.getRole().name()).toList();
+        credentialRepository.saveAndFlush(userCredential);
+
+        // Buat Nasabah dengan menggunakan ID UserCredential yang baru dibuat
+        Nasabah nasabah = nasabahService.createNasabah(nasabahRequest, userCredential);
+
+
+        // Konstruksi respons Nasabah
+        List<String> roles = userCredential.getRoles().stream()
+                .map(role -> role.getRole().name())
+                .toList();
+
         return NasabahResponse.builder()
                 .fullname(nasabah.getFullname())
                 .email(nasabah.getEmail())
                 .phoneNumber(nasabah.getPhoneNumber())
                 .address(nasabah.getAddress())
-                .username(savedUserCredential.getUsername())
+                .username(userCredential.getUsername())
                 .role(roles)
+                .userCredential(userCredential.getId()) // Menambahkan ID UserCredential ke dalam respons
                 .build();
     }
+
 
     @Override
     public String login(AuthRequest authRequest) {
