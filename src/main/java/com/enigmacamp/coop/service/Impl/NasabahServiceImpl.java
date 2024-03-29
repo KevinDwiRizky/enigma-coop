@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
@@ -68,6 +70,28 @@ public class NasabahServiceImpl implements NasabahService {
         if (optionalNasabah.isPresent()) return optionalNasabah.get();
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nasabah with id : " + id + " Not Found");
     }
+
+    @Override
+    public Nasabah getNasabahByLogin(String nasabahId) {
+        // Mendapatkan informasi autentikasi pengguna yang sedang login
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Mengambil nama pengguna (ID) dari informasi autentikasi
+        String loggedInUserId = authentication.getName();
+
+        // Memeriksa apakah ID pengguna yang sedang login cocok dengan ID yang diberikan dalam parameter
+        if (!loggedInUserId.equals(nasabahId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to access this resource");
+        }
+
+        Optional<Nasabah> optionalNasabah = nasabahRepository.findById(loggedInUserId);
+        if (optionalNasabah.isPresent()) {
+            return optionalNasabah.get();
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nasabah with id : " + nasabahId + " Not Found");
+        }
+    }
+
 
     @Override
     public Nasabah updateNasabah(Nasabah nasabah) {

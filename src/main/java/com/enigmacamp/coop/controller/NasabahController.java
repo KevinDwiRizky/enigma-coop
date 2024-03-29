@@ -13,12 +13,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 //@PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
-@PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/nasabah")
@@ -26,10 +27,9 @@ public class NasabahController {
 
 
     private final NasabahService nasabahService;
-    private final AuthService authService;
 
 
-
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAllNasabah(
             @RequestParam(defaultValue = "1") Integer page,
@@ -63,6 +63,11 @@ public class NasabahController {
                 .build();
         return ResponseEntity.ok(response);
     }
+
+
+
+
+
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<?> deleteNasabahById(@PathVariable String id){

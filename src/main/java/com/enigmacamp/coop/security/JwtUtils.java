@@ -62,7 +62,7 @@ public class JwtUtils {
             return decodedJWT.getIssuer().equals(appName);
         }catch (JWTVerificationException e){
             // Menangani pengecualian selama verifikasi JWT
-            log.error("Invalid Verification JWT : {}", e.getMessage());
+            log.error("Error verifying JWT token: {}", e.getMessage());
             return false;
         }
     }
@@ -81,16 +81,13 @@ public class JwtUtils {
             // Mendekode token JWT
             DecodedJWT decodedJWT = getDecodedJWT(token);
 
-            // Mengambil peran pengguna dari token
             List<String> roles = decodedJWT.getClaim("roles").asList(String.class);
 
-            // Membangun objek JwtClaim dengan ID pengguna dan peran
             return JwtClaim.builder()
                     .userId(decodedJWT.getSubject())
                     .roles(roles)
                     .build();
         } catch (JWTVerificationException e){
-            // Menangani pengecualian selama verifikasi JWT
             log.error("Invalid Verification info user jwt : {} ", e.getMessage());
             return null;
         }

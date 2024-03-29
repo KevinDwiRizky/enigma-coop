@@ -12,6 +12,7 @@ public interface NasabahService {
     Page<Nasabah> getAllNasabah(Integer page, Integer size);
 
     Nasabah getNasabahById(String id);
+    Nasabah getNasabahByLogin(String customerId);
 
     Nasabah updateNasabah(Nasabah nasabah);
 

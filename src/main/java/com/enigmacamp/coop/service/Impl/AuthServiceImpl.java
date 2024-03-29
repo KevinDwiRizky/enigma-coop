@@ -1,10 +1,13 @@
 package com.enigmacamp.coop.service.Impl;
 
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.enigmacamp.coop.constant.RoleEnum;
 import com.enigmacamp.coop.entity.Nasabah;
 import com.enigmacamp.coop.entity.Role;
 import com.enigmacamp.coop.entity.UserCredential;
+import com.enigmacamp.coop.model.JwtClaim;
 import com.enigmacamp.coop.model.request.AuthRequest;
 import com.enigmacamp.coop.model.request.NasabahRequest;
 import com.enigmacamp.coop.model.response.AuthResponse;
@@ -107,6 +110,16 @@ public class AuthServiceImpl implements AuthService {
         // berikan token
         UserCredential userCredential = (UserCredential) authenticate.getPrincipal();
         return jwtUtils.generateToken(userCredential);
+    }
+
+    @Override
+    public String getUserIdFromToken(String token) {
+        JwtClaim jwtClaim = jwtUtils.getUserInfoByToken(token);
+        if (jwtClaim != null) {
+            return jwtClaim.getUserId();
+        } else {
+            return null;
+        }
     }
 
 }

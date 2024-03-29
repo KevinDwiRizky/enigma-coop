@@ -8,4 +8,5 @@ import com.enigmacamp.coop.model.response.NasabahResponse;
 public interface AuthService {
     NasabahResponse register(NasabahRequest nasabahRequest);
     String login(AuthRequest authRequest);
+    String getUserIdFromToken(String token);
 }

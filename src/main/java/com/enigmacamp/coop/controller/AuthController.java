@@ -9,10 +9,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -41,5 +39,16 @@ public class AuthController {
                 .data(token) // Mengirim token JWT sebagai data
                 .build();
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/profile")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+    public ResponseEntity<String> getProfile(@RequestHeader("Authorization") String token) {
+        String userId = authService.getUserIdFromToken(token);
+        if (userId != null) {
+            return ResponseEntity.ok("User ID: " + userId);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unable to get user ID from token");
+        }
     }
 }

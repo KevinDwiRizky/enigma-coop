@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NasabahRepository extends JpaRepository<Nasabah, String > {
     Nasabah findByEmail(String email);
+
 }
